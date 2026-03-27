@@ -1,3 +1,2 @@
 telethon==1.36.0
 python-binance==1.0.19
-cryptg==0.4.0
