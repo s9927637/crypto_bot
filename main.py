@@ -391,12 +391,20 @@ class Notifier:
     def __init__(self, tg_client: TelegramClient):
         self.client = tg_client
         self.chat_id = CONFIG["alert_chat_id"]
+        self.bot_token = os.environ.get("BOT_TOKEN", "")
 
     async def send(self, text: str):
-        if not self.chat_id:
+        if not self.bot_token:
             return
         try:
-            await self.client.send_message(int(self.chat_id), text, parse_mode="markdown")
+            import aiohttp
+            url = f"https://api.telegram.org/bot{self.bot_token}/sendMessage"
+            async with aiohttp.ClientSession() as session:
+                await session.post(url, json={
+                    "chat_id": self.chat_id,
+                    "text": text,
+                    "parse_mode": "Markdown"
+                })
         except Exception as e:
             logger.error(f"通知發送失敗: {e}")
 
